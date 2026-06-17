@@ -1,0 +1,24 @@
+---
+import Layout from '../layouts/Layout.astro';
+import BlogPost from '../components/BlogPost.astro';
+const allPosts: postType[] = Object.values(import.meta.glob('./posts/*.md', { eager: true }));
+type postType = {
+  url: string;
+  frontmatter: {
+    title: string;
+    description?: string;
+    pubDate?: Date;
+    author?: string;
+    tags?: string[];
+  };
+};
+---
+<Layout>
+    <h1>My Astro Blog</h1>
+    <p>Markdown posts</p>
+    <ul>
+        {allPosts.map((post: postType) => (
+            <BlogPost key={post.url} title={post.frontmatter.title} url={post.url} />
+        ))}
+    </ul>
+</Layout>

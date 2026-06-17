@@ -1,3 +1,9 @@
+---
+import '../styles/global.css';
+import Navigation from '../components/Navigation.astro';
+import Footer from '../components/Footer.astro';
+---
+
 <!doctype html>
 <html lang="en">
 	<head>
@@ -8,16 +14,224 @@
 		<meta name="generator" content={Astro.generator} />
 		<title>Astro Basics</title>
 	</head>
+	<Navigation />
 	<body>
 		<slot />
 	</body>
+	<Footer val="fatstro" />
 </html>
 
-<style>
+<style is:global>
+	/* Global Reset & Variables */
+	:root {
+		--bg-primary: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+		--bg-secondary: rgba(255, 255, 255, 0.1);
+		--glass-border: rgba(255, 255, 255, 0.18);
+		--glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+		--text-primary: #f1f5f9;
+		--text-secondary: #cbd5e1;
+		--accent: #60a5fa;
+		--accent-hover: #93c5fd;
+		--radius: 20px;
+		--transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
 	html,
 	body {
 		margin: 0;
+		padding: 0;
 		width: 100%;
-		height: 100%;
+		min-height: 100%;
+		background: var(--bg-primary);
+		color: var(--text-primary);
+		font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+		font-size: 16px;
+		line-height: 1.6;
+		overflow-x: hidden;
+	}
+
+	/* Global Element Styles */
+	* {
+		box-sizing: border-box;
+	}
+
+	a {
+		color: var(--accent);
+		text-decoration: none;
+		transition: var(--transition);
+	}
+
+	a:hover {
+		color: var(--accent-hover);
+	}
+
+	h1, h2, h3, h4, h5, h6 {
+		margin: 1.5rem 0 1rem 0;
+		font-weight: 600;
+		line-height: 1.3;
+		color: var(--text-primary);
+	}
+
+	h1 {
+		font-size: 2.5rem;
+	}
+
+	h2 {
+		font-size: 2rem;
+	}
+
+	h3 {
+		font-size: 1.5rem;
+	}
+
+	h4 {
+		font-size: 1.25rem;
+	}
+
+	p {
+		margin: 1rem 0;
+		color: var(--text-secondary);
+	}
+
+	/* Glass Card Component */
+	.glass-card {
+		background: var(--bg-secondary);
+		backdrop-filter: blur(10px);
+		border: 1px solid var(--glass-border);
+		border-radius: var(--radius);
+		box-shadow: var(--glass-shadow);
+		padding: 2rem;
+		transition: var(--transition);
+	}
+
+	.glass-card:hover {
+		background: rgba(255, 255, 255, 0.15);
+		border-color: rgba(255, 255, 255, 0.25);
+		transform: translateY(-4px);
+	}
+
+	/* Buttons */
+	button,
+	input[type="submit"],
+	input[type="button"] {
+		background: var(--bg-secondary);
+		color: var(--text-primary);
+		border: 1px solid var(--glass-border);
+		border-radius: var(--radius);
+		padding: 0.75rem 1.5rem;
+		font-size: 1rem;
+		cursor: pointer;
+		transition: var(--transition);
+		backdrop-filter: blur(10px);
+	}
+
+	button:hover,
+	input[type="submit"]:hover,
+	input[type="button"]:hover {
+		background: var(--accent);
+		border-color: var(--accent-hover);
+		transform: translateY(-2px);
+	}
+
+	/* Form Elements */
+	input[type="text"],
+	input[type="email"],
+	input[type="search"],
+	textarea,
+	select {
+		background: rgba(255, 255, 255, 0.05);
+		color: var(--text-primary);
+		border: 1px solid var(--glass-border);
+		border-radius: var(--radius);
+		padding: 0.75rem 1rem;
+		font-size: 1rem;
+		transition: var(--transition);
+		font-family: inherit;
+	}
+
+	input[type="text"]:focus,
+	input[type="email"]:focus,
+	input[type="search"]:focus,
+	textarea:focus,
+	select:focus {
+		outline: none;
+		background: rgba(255, 255, 255, 0.1);
+		border-color: var(--accent);
+		box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+	}
+
+	/* Code Blocks */
+	code {
+		background: rgba(0, 0, 0, 0.3);
+		color: var(--accent);
+		padding: 0.2rem 0.5rem;
+		border-radius: 4px;
+		font-family: 'Courier New', monospace;
+	}
+
+	pre {
+		background: rgba(0, 0, 0, 0.4);
+		border: 1px solid var(--glass-border);
+		border-radius: var(--radius);
+		padding: 1.5rem;
+		overflow-x: auto;
+		backdrop-filter: blur(10px);
+	}
+
+	pre code {
+		background: transparent;
+		padding: 0;
+	}
+
+	/* Lists */
+	ul, ol {
+		margin: 1rem 0;
+		padding-left: 2rem;
+		color: var(--text-secondary);
+	}
+
+	li {
+		margin: 0.5rem 0;
+	}
+
+	/* Images */
+	img {
+		max-width: 100%;
+		height: auto;
+		border-radius: var(--radius);
+		display: block;
+	}
+
+	/* Blockquote */
+	blockquote {
+		border-left: 4px solid var(--accent);
+		margin: 1.5rem 0;
+		padding-left: 1.5rem;
+		color: var(--text-secondary);
+		font-style: italic;
+	}
+
+	/* Scrollbar */
+	::-webkit-scrollbar {
+		width: 10px;
+	}
+
+	::-webkit-scrollbar-track {
+		background: rgba(255, 255, 255, 0.05);
+	}
+
+	::-webkit-scrollbar-thumb {
+		background: var(--accent);
+		border-radius: 5px;
+	}
+
+	::-webkit-scrollbar-thumb:hover {
+		background: var(--accent-hover);
+	}
+
+	/* Selection */
+	::selection {
+		background: var(--accent);
+		color: var(--bg-primary);
 	}
 </style>

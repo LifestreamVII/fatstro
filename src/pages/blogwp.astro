@@ -1,0 +1,30 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getPosts } from '../lib/wp-ql';
+import BlogPostsSearch from '../components/BlogPostsSearch';
+
+export const prerender = false;
+
+const { nodes } = await getPosts({ limit: 10 });
+
+const initialPosts = nodes.map((p: any) => ({
+  id: p.id,
+  title: p.title,
+  slug: p.slug,
+  excerpt: p.excerpt,
+  date: p.date
+}));
+---
+
+<Layout>
+  <div class="container">
+    <h1>WordPress Blog</h1>
+    <p>Welcome to my WordPress-powered blog posts.</p>
+    <BlogPostsSearch 
+      client:load 
+      initialPosts={initialPosts} 
+      source="wp" 
+      postUrlPrefix="/blog-wp/" 
+    />
+  </div>
+</Layout>

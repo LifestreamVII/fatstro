@@ -1,0 +1,33 @@
+---
+export const prerender = false;
+import { wpquery } from '../../lib/wp-ql';
+import Layout from '../../layouts/Layout.astro';
+
+const { postwp } = Astro.params;
+
+const data = await wpquery({
+  query: `
+    query GetPostBySlug($slug: ID!) {
+      post(id: $slug, idType: SLUG) {
+        title
+        content
+        date
+      }
+    }
+  `,
+  variables: { slug: postwp },
+});
+
+const post = data?.data?.post;
+---
+<Layout>
+  {post ? (
+    <article>
+      <h1>{post.title}</h1>
+      <p>{new Date(post.date).toLocaleDateString()}</p>
+      <div set:html={post.content} />
+    </article>
+  ) : (
+    <p>Post not found.</p>
+  )}
+</Layout>

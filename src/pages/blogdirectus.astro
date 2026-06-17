@@ -1,0 +1,30 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getPosts } from '../lib/directus-ql';
+import BlogPostsSearch from '../components/BlogPostsSearch';
+
+export const prerender = false;
+
+const { nodes, totalCount } = await getPosts({ limit: 10 });
+
+const initialPosts = nodes.map(p => ({
+  id: p.slug,
+  title: p.title,
+  slug: p.slug,
+  excerpt: p.content?.substring(0, 150) + '...',
+  date: p.publish_date
+}));
+---
+
+<Layout>
+  <div class="container">
+    <h1>Directus Blog</h1>
+    <p>Welcome to my Directus-powered blog posts.</p>
+    <BlogPostsSearch 
+      client:load 
+      initialPosts={initialPosts} 
+      source="directus" 
+      postUrlPrefix="/blog-directus/" 
+    />
+  </div>
+</Layout>
