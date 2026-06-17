@@ -1,0 +1,366 @@
+---
+/**
+ * Astro Islands Showcase
+ * Demonstrates various use cases for Astro's Island Architecture with different hydration strategies
+ */
+import Navigation from '../components/Navigation.astro';
+import Footer from '../components/Footer.astro';
+
+// Import Preact components for islands
+import Counter from '../components/islands/Counter';
+import ThemeToggle from '../components/islands/ThemeToggle';
+import LazyImageGallery from '../components/islands/LazyImageGallery';
+import SearchWidget from '../components/islands/SearchWidget';
+import ChatWidget from '../components/islands/ChatWidget';
+
+const title = "Astro Islands Showcase";
+const description = "Explore various use cases of Astro Islands with different hydration strategies";
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{title}</title>
+  <meta name="description" content={description}>
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --bg: #ffffff;
+      --text: #1f2937;
+      --border: #e5e7eb;
+      --code-bg: #f3f4f6;
+    }
+    
+    [data-theme="dark"] {
+      --primary: #818cf8;
+      --bg: #111827;
+      --text: #f9fafb;
+      --border: #374151;
+      --code-bg: #1f2937;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      transition: background 0.3s, color 0.3s;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: var(--primary);
+    }
+    
+    .intro {
+      font-size: 1.125rem;
+      margin-bottom: 3rem;
+      color: var(--text);
+      opacity: 0.8;
+    }
+    
+    .island-section {
+      margin-bottom: 4rem;
+      padding: 2rem;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      background: var(--bg);
+    }
+    
+    .island-section h2 {
+      font-size: 1.75rem;
+      margin-bottom: 0.5rem;
+      color: var(--primary);
+    }
+    
+    .island-meta {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+    
+    .badge-hydration {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+    
+    [data-theme="dark"] .badge-hydration {
+      background: #1e3a8a;
+      color: #93c5fd;
+    }
+    
+    .badge-framework {
+      background: #fce7f3;
+      color: #9f1239;
+    }
+    
+    [data-theme="dark"] .badge-framework {
+      background: #831843;
+      color: #fbcfe8;
+    }
+    
+    .description {
+      margin-bottom: 1.5rem;
+      opacity: 0.9;
+    }
+    
+    .demo-area {
+      padding: 2rem;
+      background: var(--code-bg);
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+    
+    .code-snippet {
+      background: var(--code-bg);
+      padding: 1rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 0.875rem;
+    }
+    
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    
+    .comparison-card {
+      padding: 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg);
+    }
+    
+    .comparison-card h3 {
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+    
+    .comparison-card ul {
+      list-style: none;
+      padding-left: 0;
+    }
+    
+    .comparison-card li {
+      padding: 0.25rem 0;
+      padding-left: 1.25rem;
+      position: relative;
+    }
+    
+    .comparison-card li:before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: var(--primary);
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <Navigation />
+  
+  <div class="container">
+    <h1>{title}</h1>
+    <p class="intro">
+      Astro Islands allow you to hydrate interactive components only when needed, 
+      keeping the rest of your page static for optimal performance. This page demonstrates 
+      various hydration strategies and real-world use cases.
+    </p>
+
+    <!-- Use Case 1: client:load - Critical Interactivity -->
+    <section class="island-section">
+      <h2>1. Critical Interactivity (client:load)</h2>
+      <div class="island-meta">
+        <span class="badge badge-hydration">client:load</span>
+        <span class="badge badge-framework">Preact</span>
+      </div>
+      <p class="description">
+        Components that need to be interactive immediately. Hydrates as soon as the page loads.
+        Use for UI elements that users expect to work right away.
+      </p>
+      <div class="demo-area">
+        <Counter client:load initialCount={0} />
+      </div>
+      <div class="code-snippet">
+&lt;Counter client:load initialCount={0} /&gt;
+      </div>
+      <p><strong>Best for:</strong> Navigation dropdowns, theme toggles, critical forms, shopping cart buttons</p>
+    </section>
+
+    <!-- Use Case 2: client:idle - Non-Critical Features -->
+    <section class="island-section">
+      <h2>2. Non-Critical Features (client:idle)</h2>
+      <div class="island-meta">
+        <span class="badge badge-hydration">client:idle</span>
+        <span class="badge badge-framework">Preact</span>
+      </div>
+      <p class="description">
+        Components that can wait until the browser is idle. Hydrates when the main thread is free.
+        Perfect for features that enhance the experience but aren't immediately necessary.
+      </p>
+      <div class="demo-area">
+        <SearchWidget client:idle />
+      </div>
+      <div class="code-snippet">
+&lt;SearchWidget client:idle /&gt;
+      </div>
+      <p><strong>Best for:</strong> Search bars, newsletter signups, social sharing buttons, comment forms</p>
+    </section>
+
+    <!-- Use Case 3: client:visible - Lazy Loading -->
+    <section class="island-section">
+      <h2>3. Lazy Loading (client:visible)</h2>
+      <div class="island-meta">
+        <span class="badge badge-hydration">client:visible</span>
+        <span class="badge badge-framework">Preact</span>
+      </div>
+      <p class="description">
+        Components that hydrate only when they scroll into view. Great for below-the-fold content
+        or long pages where most users won't see everything.
+      </p>
+      <div class="demo-area">
+        <LazyImageGallery client:visible />
+      </div>
+      <div class="code-snippet">
+&lt;LazyImageGallery client:visible /&gt;
+      </div>
+      <p><strong>Best for:</strong> Image galleries, infinite scroll, carousels, video players, charts/graphs</p>
+    </section>
+
+    <!-- Use Case 4: client:media - Responsive Interactivity -->
+    <section class="island-section">
+      <h2>4. Responsive Interactivity (client:media)</h2>
+      <div class="island-meta">
+        <span class="badge badge-hydration">client:media</span>
+        <span class="badge badge-framework">Preact</span>
+      </div>
+      <p class="description">
+        Components that hydrate only when a media query matches. Perfect for mobile-specific or 
+        desktop-specific interactions.
+      </p>
+      <div class="demo-area">
+        <ThemeToggle client:media="(max-width: 768px)" />
+      </div>
+      <div class="code-snippet">
+&lt;ThemeToggle client:media="(max-width: 768px)" /&gt;
+      </div>
+      <p><strong>Best for:</strong> Mobile navigation menus, desktop-only widgets, responsive sidebars</p>
+    </section>
+
+    <!-- Use Case 5: client:only - Framework-Specific -->
+    <section class="island-section">
+      <h2>5. Framework-Specific (client:only)</h2>
+      <div class="island-meta">
+        <span class="badge badge-hydration">client:only</span>
+        <span class="badge badge-framework">Preact</span>
+      </div>
+      <p class="description">
+        Skips server-side rendering entirely. Only renders on the client. Use for components that 
+        depend on browser APIs or can't be server-rendered.
+      </p>
+      <div class="demo-area">
+        <ChatWidget client:only="preact" />
+      </div>
+      <div class="code-snippet">
+&lt;ChatWidget client:only="preact" /&gt;
+      </div>
+      <p><strong>Best for:</strong> WebGL/Canvas apps, browser-specific APIs, third-party widgets</p>
+    </section>
+
+    <!-- Comparison Grid -->
+    <section class="island-section">
+      <h2>Hydration Strategy Comparison</h2>
+      <div class="comparison-grid">
+        <div class="comparison-card">
+          <h3>client:load</h3>
+          <ul>
+            <li>Hydrates immediately</li>
+            <li>Highest priority</li>
+            <li>Blocks other work</li>
+            <li>Use sparingly</li>
+          </ul>
+        </div>
+        
+        <div class="comparison-card">
+          <h3>client:idle</h3>
+          <ul>
+            <li>Waits for idle time</li>
+            <li>Non-blocking</li>
+            <li>Great default choice</li>
+            <li>Best performance/UX balance</li>
+          </ul>
+        </div>
+        
+        <div class="comparison-card">
+          <h3>client:visible</h3>
+          <ul>
+            <li>Intersection Observer</li>
+            <li>Perfect for long pages</li>
+            <li>Lazy by nature</li>
+            <li>Great for below fold</li>
+          </ul>
+        </div>
+        
+        <div class="comparison-card">
+          <h3>client:media</h3>
+          <ul>
+            <li>Media query based</li>
+            <li>Responsive hydration</li>
+            <li>Device-specific</li>
+            <li>Saves mobile bandwidth</li>
+          </ul>
+        </div>
+        
+        <div class="comparison-card">
+          <h3>client:only</h3>
+          <ul>
+            <li>No SSR</li>
+            <li>Client-side only</li>
+            <li>Browser API dependent</li>
+            <li>Last resort option</li>
+          </ul>
+        </div>
+        
+        <div class="comparison-card">
+          <h3>No directive (static)</h3>
+          <ul>
+            <li>Zero JavaScript</li>
+            <li>Fastest possible</li>
+            <li>Pure HTML/CSS</li>
+            <li>Default behavior</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <Footer />
+</body>
+</html>
