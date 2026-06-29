@@ -2,6 +2,7 @@
 export const prerender = false;
 import { wpquery } from '../../lib/wp-ql';
 import Layout from '../../layouts/Layout.astro';
+import MarkdownPostLayout from '../../layouts/MarkdownPostLayout.astro';
 
 const { postwp } = Astro.params;
 
@@ -12,6 +13,11 @@ const data = await wpquery({
         title
         content
         date
+        author {
+          node {
+            name
+          }
+        }
       }
     }
   `,
@@ -20,14 +26,16 @@ const data = await wpquery({
 
 const post = data?.data?.post;
 ---
-<Layout>
-  {post ? (
-    <article>
-      <h1>{post.title}</h1>
-      <p>{new Date(post.date).toLocaleDateString()}</p>
+{post ? (
+    <MarkdownPostLayout 
+      frontmatter={{ 
+        title: post.title, 
+        pubDate: new Date(post.date),
+        author: post.author?.node?.name,
+        tags: []
+      }}>
       <div set:html={post.content} />
-    </article>
+      </MarkdownPostLayout>
   ) : (
     <p>Post not found.</p>
-  )}
-</Layout>
+)}
