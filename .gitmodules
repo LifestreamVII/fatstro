@@ -1,0 +1,3 @@
+[submodule "wp-audit"]
+	path = wp-audit
+	url = https://github.com/LifestreamVII/wp-audit.git
