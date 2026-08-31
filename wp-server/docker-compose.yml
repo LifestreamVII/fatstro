@@ -34,8 +34,8 @@ services:
     restart: unless-stopped
 
   wordpress:
-    image: wordpress:latest
     container_name: wp_app
+    build: .
     depends_on:
       mysql:
         condition: service_healthy
@@ -46,6 +46,8 @@ services:
       WORDPRESS_DB_PASSWORD: ${DB_PASSWORD:-wordpress}
       WORDPRESS_TABLE_PREFIX: ${WP_TABLE_PREFIX:-wp_}
       WORDPRESS_DEBUG: ${WP_DEBUG:-false}
+      WP_CLI_ALLOW_ROOT: '1'
+
     volumes:
       - ./wordpress:/var/www/html
       - ./wp-content:/var/www/html/wp-content
