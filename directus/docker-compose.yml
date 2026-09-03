@@ -1,13 +1,30 @@
 version: "3"
 services:
   directus:
-    image: directus/directus:10.8.3
+    build: .          # Uses directus/Dockerfile (adds sqlite3 CLI)
     ports:
       - 8055:8055
     volumes:
       - ./database:/directus/database
       - ./uploads:/directus/uploads
       - ./extensions:/directus/extensions
+      - ./init.sql:/directus/init.sql:ro
+      - ./init-uploads.sh:/directus/init-uploads.sh:ro
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        # ── First-run database seed ─────────────────────────────────────────
+        if [ ! -f /directus/database/data.db ]; then
+          echo "[init] Seeding database from init.sql ..."
+          sqlite3 /directus/database/data.db < /directus/init.sql
+          echo "[init] Database seeded."
+        fi
+
+        # ── Placeholder image downloads ─────────────────────────────────────
+        sh /directus/init-uploads.sh
+
+        # ── Hand off to Directus ────────────────────────────────────────────
+        exec node cli.js start
     environment:
       KEY: "replace-with-random-value"
       SECRET: "replace-with-random-value"
