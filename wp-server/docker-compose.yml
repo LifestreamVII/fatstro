@@ -47,6 +47,7 @@ services:
       WORDPRESS_TABLE_PREFIX: ${WP_TABLE_PREFIX:-wp_}
       WORDPRESS_DEBUG: ${WP_DEBUG:-false}
       WP_CLI_ALLOW_ROOT: '1'
+      WP_PERMALINK_STRUCTURE: ${WP_PERMALINK_STRUCTURE:-/%postname%/}
 
     volumes:
       - ./wordpress:/var/www/html
