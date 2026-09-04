@@ -24,6 +24,17 @@ echo "Starting OpenSSH server..."
     if ! wp plugin is-active wp-graphql --path=/var/www/html --allow-root >/dev/null 2>&1; then
         wp plugin activate wp-graphql --path=/var/www/html --allow-root
     fi
+
+    PERMALINK_STRUCTURE="${WP_PERMALINK_STRUCTURE:-/%postname%/}"
+    if [ -z "$PERMALINK_STRUCTURE" ] || [ "$PERMALINK_STRUCTURE" = "plain" ]; then
+        PERMALINK_STRUCTURE='/%postname%/'
+    fi
+
+    CURRENT_PERMALINK_STRUCTURE="$(wp option get permalink_structure --path=/var/www/html --allow-root)"
+    if [ "$CURRENT_PERMALINK_STRUCTURE" != "$PERMALINK_STRUCTURE" ]; then
+        wp option update permalink_structure "$PERMALINK_STRUCTURE" --path=/var/www/html --allow-root
+        wp rewrite flush --hard --path=/var/www/html --allow-root
+    fi
 ) &
 
 # Execute the default WordPress entrypoint command
